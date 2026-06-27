@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<title>Gurbani Tutor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0d0d1a;
+    --surface:  #14142b;
+    --gold:     #ffd700;
+    --gold-dim: #8a7400;
+    --text:     #e8e0cc;
+    --muted:    #5a5470;
+    --danger:   #e05555;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
+
+  .shell { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
+
+  header { padding: 14px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .header-title { text-align: left; }
+  header h1 { font-family: 'Crimson Pro', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: 0.04em; color: var(--gold); }
+  header p  { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1px; }
+
+  #installBtn {
+    display: none; padding: 6px 14px; background: none;
+    border: 1px solid var(--gold-dim); border-radius: 20px;
+    color: var(--gold); font-family: 'Inter', sans-serif;
+    font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; white-space: nowrap; transition: background 0.2s;
+  }
+  #installBtn:active { background: #1e1e3a; }
+
+  .tabs { display: flex; margin: 0 20px; border-bottom: 1px solid var(--muted); }
+  .tab {
+    flex: 1; padding: 10px 0; background: none; border: none;
+    font-family: 'Inter', sans-serif; font-size: 0.85rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer; position: relative; transition: color 0.2s;
+  }
+  .tab.active { color: var(--gold); }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 10%;
+    width: 80%; height: 2px; background: var(--gold); border-radius: 1px;
+  }
+
+  .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .panel.active { display: flex; }
+
+  .shabad-wrap {
+    margin: 12px 20px 8px; border-radius: 10px; overflow: hidden;
+    border: 1px solid #2a2a4a; background: var(--surface); flex-shrink: 0;
+  }
+  .shabad-wrap img { width: 100%; height: auto; display: block; }
+
+  .listen-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 10px 20px 20px; gap: 18px;
+  }
+  .play-btn {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--gold-dim);
+    color: var(--gold); font-size: 2rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s; flex-shrink: 0;
+  }
+  .play-btn:active { background: #1e1e3a; }
+  .play-btn.playing { border-color: var(--gold); }
+  .progress-bar-wrap { width: 100%; height: 3px; background: #2a2a4a; border-radius: 2px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.1s linear; }
+  .hint { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }
+
+  .sing-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 10px 20px 20px; gap: 18px;
+  }
+
+  .ring-wrap { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+  .ring-svg { width: 130px; height: 130px; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: #2a2a4a; stroke-width: 6; }
+  .ring-fill {
+    fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round;
+    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+    transition: stroke-dashoffset 0.25s linear;
+  }
+  .ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+  }
+  .ring-seconds { font-size: 2rem; font-weight: 500; color: var(--gold); line-height: 1; }
+  .ring-label   { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .state-label {
+    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); min-height: 1.2em; text-align: center;
+  }
+  .state-label.recording { color: var(--danger); }
+  .state-label.playing   { color: var(--gold); }
+
+  .start-btn {
+    padding: 14px 48px; background: none;
+    border: 1.5px solid var(--gold-dim); border-radius: 40px;
+    color: var(--gold); font-family: 'Inter', sans-serif;
+    font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  }
+  .start-btn:active { background: #1e1e3a; }
+  .start-btn:disabled { color: var(--muted); border-color: #2a2a4a; cursor: default; }
+
+  .pb-wrap { width: 100%; height: 3px; background: #2a2a4a; border-radius: 2px; overflow: hidden; }
+  .pb-bar  { height: 100%; background: var(--gold); width: 0%; transition: width 0.1s linear; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-title">
+      <h1>Gurbani Tutor</h1>
+      <p>Listen · Sing · Learn</p>
+    </div>
+    <button id="installBtn" onclick="installApp()">⊕ Install</button>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('listen')">Listen</button>
+    <button class="tab"        onclick="switchTab('sing')">Sing</button>
+  </div>
+
+  <!-- LISTEN -->
+  <div class="panel active" id="panel-listen">
+    <div class="shabad-wrap"><img src="1.jpg" alt="Shabad"></div>
+    <div class="listen-body">
+      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <p class="hint">Tap to listen to the tutor</p>
+    </div>
+  </div>
+
+  <!-- SING -->
+  <div class="panel" id="panel-sing">
+    <div class="shabad-wrap"><img src="1.jpg" alt="Shabad"></div>
+    <div class="sing-body">
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 130 130">
+          <circle class="ring-track" cx="65" cy="65" r="54"/>
+          <circle class="ring-fill" id="ringFill" cx="65" cy="65" r="54"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-seconds" id="ringSeconds">58</span>
+          <span class="ring-label"   id="ringLabel">seconds</span>
+        </div>
+      </div>
+      <p class="state-label" id="stateLabel">Ready</p>
+      <div class="pb-wrap"><div class="pb-bar" id="pbBar"></div></div>
+      <button class="start-btn" id="startBtn" onclick="startRecording()">Start</button>
+    </div>
+  </div>
+
+</div>
+
+<audio id="tutorAudio" src="1.m4a"></audio>
+<audio id="playbackAudio"></audio>
+
+<script>
+/* ── INSTALL ── */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').style.display = 'block';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn').style.display = 'none';
+  deferredPrompt = null;
+});
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+}
+
+/* ── TABS ── */
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) =>
+    t.classList.toggle('active', (i === 0) === (name === 'listen')));
+  document.querySelectorAll('.panel').forEach(p =>
+    p.classList.toggle('active', p.id === 'panel-' + name));
+}
+
+/* ── LISTEN ── */
+const tutorAudio  = document.getElementById('tutorAudio');
+const playBtn     = document.getElementById('playBtn');
+const progressBar = document.getElementById('progressBar');
+
+function togglePlay() {
+  tutorAudio.paused ? tutorAudio.play() : tutorAudio.pause();
+}
+tutorAudio.addEventListener('play',  () => { playBtn.textContent = '⏸'; playBtn.classList.add('playing'); });
+tutorAudio.addEventListener('pause', () => { playBtn.textContent = '▶'; playBtn.classList.remove('playing'); });
+tutorAudio.addEventListener('ended', () => { playBtn.textContent = '▶'; playBtn.classList.remove('playing'); progressBar.style.width = '0%'; });
+tutorAudio.addEventListener('timeupdate', () => {
+  if (tutorAudio.duration) progressBar.style.width = (tutorAudio.currentTime / tutorAudio.duration * 100) + '%';
+});
+
+/* ── SING ── */
+const RECORD_SECS       = 58;
+const PLAYBACK_DELAY_MS = 2000;
+const CIRCUMFERENCE     = 2 * Math.PI * 54;
+
+const ringFill      = document.getElementById('ringFill');
+const ringSeconds   = document.getElementById('ringSeconds');
+const ringLabel     = document.getElementById('ringLabel');
+const stateLabel    = document.getElementById('stateLabel');
+const startBtn      = document.getElementById('startBtn');
+const pbBar         = document.getElementById('pbBar');
+const playbackAudio = document.getElementById('playbackAudio');
+
+let mediaRecorder, chunks = [], countdownTimer, blobURL = null;
+
+function setRing(fraction) { ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - fraction); }
+function resetRing() { setRing(0); ringSeconds.textContent = RECORD_SECS; ringLabel.textContent = 'seconds'; }
+
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: {
+    echoCancellation: false,
+    noiseSuppression: false,
+    autoGainControl: false
+  }}).then(stream => {
+    if (blobURL) { URL.revokeObjectURL(blobURL); blobURL = null; }
+    chunks = [];
+
+    // Pick best supported format
+    let mimeType = 'audio/webm';
+    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+      mimeType = 'audio/webm;codecs=opus';
+    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+      mimeType = 'audio/mp4';
+    }
+
+    mediaRecorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 128000 });
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, { type: mimeType });
+      blobURL = URL.createObjectURL(blob);
+      setTimeout(() => playback(blobURL), PLAYBACK_DELAY_MS);
+    };
+
+    mediaRecorder.start();
+    startBtn.disabled = true;
+    stateLabel.className = 'state-label recording';
+    stateLabel.textContent = 'Recording…';
+    pbBar.style.width = '0%';
+
+    let elapsed = 0;
+    setRing(0);
+    ringSeconds.textContent = RECORD_SECS;
+
+    countdownTimer = setInterval(() => {
+      elapsed++;
+      const remaining = RECORD_SECS - elapsed;
+      setRing(elapsed / RECORD_SECS);
+      ringSeconds.textContent = remaining > 0 ? remaining : 0;
+      if (elapsed >= RECORD_SECS) {
+        clearInterval(countdownTimer);
+        mediaRecorder.stop();
+        stateLabel.className = 'state-label';
+        stateLabel.textContent = 'Processing…';
+        ringLabel.textContent = 'done';
+      }
+    }, 1000);
+
+  }).catch(() => {
+    stateLabel.textContent = 'Microphone access denied';
+  });
+}
+
+function playback(url) {
+  stateLabel.className = 'state-label playing';
+  stateLabel.textContent = 'Playing back…';
+  playbackAudio.src = url;
+  playbackAudio.play();
+  playbackAudio.ontimeupdate = () => {
+    if (playbackAudio.duration)
+      pbBar.style.width = (playbackAudio.currentTime / playbackAudio.duration * 100) + '%';
+  };
+  playbackAudio.onended = () => {
+    pbBar.style.width = '0%';
+    stateLabel.className = 'state-label';
+    stateLabel.textContent = 'Ready';
+    resetRing();
+    startBtn.disabled = false;
+  };
+}
+
+resetRing();
+</script>
+
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>
