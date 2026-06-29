@@ -4,121 +4,156 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="manifest" href="manifest.json">
-<title>Gurbani Tutor</title>
+<meta name="theme-color" content="#0d0d1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kirtan 1">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Kirtan 1</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@400;500&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:       #0d0d1a;
-    --surface:  #14142b;
-    --gold:     #ffd700;
-    --gold-dim: #8a7400;
-    --text:     #e8e0cc;
-    --muted:    #5a5470;
-    --danger:   #e05555;
+    --bg: #0d0d1a; --surface: #14142b; --gold: #ffd700; --gold-dim: #8a7400;
+    --text: #e8e0cc; --muted: #5a5470; --danger: #e05555; --purple: #7a6fa0; --teal: #40a0a0;
   }
-
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
+  .shell { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; position: relative; }
 
-  .shell { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
-
-  header { padding: 14px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+  /* HEADER */
+  header { padding: 14px 20px 8px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
   .header-title { text-align: left; }
   header h1 { font-family: 'Crimson Pro', serif; font-size: 1.4rem; font-weight: 600; letter-spacing: 0.04em; color: var(--gold); }
   header p  { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1px; }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  #installBtn, .history-btn { display: none; padding: 6px 14px; background: none; border: 1px solid var(--gold-dim); border-radius: 20px; color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+  .history-btn { display: flex; align-items: center; gap: 5px; }
+  #installBtn:active, .history-btn:active { background: #1e1e3a; }
 
-  #installBtn {
-    display: none; padding: 6px 14px; background: none;
-    border: 1px solid var(--gold-dim); border-radius: 20px;
-    color: var(--gold); font-family: 'Inter', sans-serif;
-    font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
-    cursor: pointer; white-space: nowrap; transition: background 0.2s;
-  }
-  #installBtn:active { background: #1e1e3a; }
-
-  .tabs { display: flex; margin: 0 20px; border-bottom: 1px solid var(--muted); }
-  .tab {
-    flex: 1; padding: 10px 0; background: none; border: none;
-    font-family: 'Inter', sans-serif; font-size: 0.85rem;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); cursor: pointer; position: relative; transition: color 0.2s;
-  }
+  /* TABS */
+  .tabs { display: flex; margin: 0 20px; border-bottom: 1px solid var(--muted); flex-shrink: 0; }
+  .tab { flex: 1; padding: 10px 0; background: none; border: none; font-family: 'Inter', sans-serif; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; position: relative; transition: color 0.2s; }
   .tab.active { color: var(--gold); }
-  .tab.active::after {
-    content: ''; position: absolute; bottom: -1px; left: 10%;
-    width: 80%; height: 2px; background: var(--gold); border-radius: 1px;
-  }
+  .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 10%; width: 80%; height: 2px; background: var(--gold); border-radius: 1px; }
+  .tab.listen-tab { color: var(--teal); }
+  .tab.listen-tab.active { color: var(--gold); }
+  .tab.xl-tab { color: var(--purple); }
+  .tab.xl-tab.active { color: var(--gold); }
 
+  /* REFERENCE SLOTS */
+  .ref-row { flex-shrink: 0; margin: 8px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+  .ref-slot-tabs { display: flex; gap: 6px; }
+  .ref-slot-btn { padding: 4px 12px; background: none; border: 1px solid #2a2a4a; border-radius: 14px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 0.63rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+  .ref-slot-btn.active { color: var(--gold); border-color: var(--gold-dim); }
+  .ref-slot-btn:active { background: #1e1e3a; }
+  .ref-toggle-btn { padding: 5px 14px; background: none; border: 1px solid #2a2a4a; border-radius: 16px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+  .ref-toggle-btn:active { color: var(--gold); border-color: var(--gold-dim); }
+  .ref-area { width: calc(100% - 40px); margin: 6px 20px 0; flex-shrink: 0; transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease; }
+  .ref-area.hidden { max-height: 0 !important; opacity: 0; margin-top: 0; margin-bottom: 0; overflow: hidden; pointer-events: none; }
+  .png-slot { display: none; height: 120px; background: var(--surface); border: 1px solid #2a2a4a; border-radius: 10px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .png-slot.active { display: block; }
+  .png-slot img { width: 100%; display: block; border-radius: 10px; }
+  .lyrics-box { width: 100%; height: 120px; display: none; background: var(--surface); border: 1px solid #2a2a4a; border-radius: 10px; color: var(--text); font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.55; padding: 10px 12px; resize: none; overflow-y: auto; -webkit-overflow-scrolling: touch; outline: none; }
+  .lyrics-box.active { display: block; }
+  .lyrics-box:focus { border-color: var(--gold-dim); }
+  .lyrics-box::placeholder { color: var(--muted); font-style: italic; }
+  .shabad-actions { display: none; align-items: center; gap: 6px; margin-top: 5px; }
+  .shabad-actions.active { display: flex; }
+
+  /* PANELS */
   .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
   .panel.active { display: flex; }
+  .sing-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 20px 20px; gap: 14px; }
 
-  .shabad-wrap {
-    margin: 12px 20px 8px; border-radius: 10px; overflow: hidden;
-    border: 1px solid #2a2a4a; background: var(--surface); flex-shrink: 0;
-  }
-  .shabad-wrap img { width: 100%; height: auto; display: block; }
-
-  .listen-body {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 10px 20px 20px; gap: 18px;
-  }
-  .play-btn {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: var(--surface); border: 2px solid var(--gold-dim);
-    color: var(--gold); font-size: 2rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: border-color 0.2s, background 0.2s; flex-shrink: 0;
-  }
-  .play-btn:active { background: #1e1e3a; }
-  .play-btn.playing { border-color: var(--gold); }
-  .progress-bar-wrap { width: 100%; height: 3px; background: #2a2a4a; border-radius: 2px; overflow: hidden; }
-  .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.1s linear; }
-  .hint { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }
-
-  .sing-body {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 10px 20px 20px; gap: 18px;
-  }
-
-  .ring-wrap { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
-  .ring-svg { width: 130px; height: 130px; transform: rotate(-90deg); }
+  /* RING */
+  .ring-wrap { position: relative; width: 134px; height: 134px; flex-shrink: 0; }
+  .ring-svg { width: 134px; height: 134px; transform: rotate(-90deg); }
   .ring-track { fill: none; stroke: #2a2a4a; stroke-width: 6; }
-  .ring-fill {
-    fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round;
-    stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
-    transition: stroke-dashoffset 0.25s linear;
-  }
-  .ring-center {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 2px;
-  }
+  .ring-fill { fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 326.7; stroke-dashoffset: 326.7; transition: stroke-dashoffset 0.9s linear; }
+  .ring-fill.mode-record { stroke: var(--gold); }
+  .ring-fill.mode-play   { stroke: var(--purple); }
+  .ring-fill.mode-listen { stroke: var(--teal); }
+  .ring-fill.mode-xl     { stroke: #e07040; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
   .ring-seconds { font-size: 2rem; font-weight: 500; color: var(--gold); line-height: 1; }
-  .ring-label   { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .ring-label   { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
 
-  .state-label {
-    font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); min-height: 1.2em; text-align: center;
-  }
+  /* BADGES / STATE / PROGRESS */
+  .duration-badge { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--muted); letter-spacing: 0.1em; text-align: center; }
+  .duration-badge span { color: var(--gold); font-size: 1.1rem; }
+  .state-label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); min-height: 1.2em; text-align: center; }
   .state-label.recording { color: var(--danger); }
-  .state-label.playing   { color: var(--gold); }
-
-  .start-btn {
-    padding: 14px 48px; background: none;
-    border: 1.5px solid var(--gold-dim); border-radius: 40px;
-    color: var(--gold); font-family: 'Inter', sans-serif;
-    font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase;
-    cursor: pointer; transition: border-color 0.2s, background 0.2s;
-  }
-  .start-btn:active { background: #1e1e3a; }
-  .start-btn:disabled { color: var(--muted); border-color: #2a2a4a; cursor: default; }
-
+  .state-label.playing   { color: var(--purple); }
+  .state-label.listening { color: var(--teal); }
+  .state-label.waiting   { color: var(--purple); }
   .pb-wrap { width: 100%; height: 3px; background: #2a2a4a; border-radius: 2px; overflow: hidden; }
   .pb-bar  { height: 100%; background: var(--gold); width: 0%; transition: width 0.1s linear; }
+
+  /* BUTTONS */
+  .start-btn { padding: 13px 44px; background: none; border: 1.5px solid var(--gold-dim); border-radius: 40px; color: var(--gold); font-family: 'Inter', sans-serif; font-size: 0.88rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+  .start-btn:active   { background: #1e1e3a; }
+  .start-btn:disabled { color: var(--muted); border-color: #2a2a4a; cursor: default; }
+  .listen-btn { padding: 13px 44px; background: none; border: 1.5px solid var(--teal); border-radius: 40px; color: var(--teal); font-family: 'Inter', sans-serif; font-size: 0.88rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+  .listen-btn:active { background: #0a1e1e; }
+  .stop-btn { padding: 13px 44px; background: none; border: 1.5px solid var(--danger); border-radius: 40px; color: var(--danger); font-family: 'Inter', sans-serif; font-size: 0.88rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; display: none; }
+  .stop-btn.visible { display: block; }
+  .stop-btn:active { background: #2a0a0a; }
+  .reset-xl-btn { padding: 9px 28px; background: none; border: 1px solid #2a2a4a; border-radius: 30px; color: var(--muted); font-family: 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; display: none; }
+  .reset-xl-btn.visible { display: block; }
+  .reset-xl-btn:active { color: var(--gold); border-color: var(--gold-dim); }
+
+  /* ACTION ROW */
+  .action-row { display: none; gap: 10px; flex-direction: row; align-items: center; }
+  .action-row.visible { display: flex; }
+  .act-btn { padding: 9px 18px; background: none; border-radius: 30px; font-family: 'Inter', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+  .act-btn.replay { border: 1px solid var(--gold-dim); color: var(--gold); }
+  .act-btn.export { border: 1px solid #3a6a3a; color: #6adb6a; }
+  .act-btn.del    { border: 1px solid #6a2a2a; color: var(--danger); }
+  .act-btn:active { background: #1e1e3a; }
+
+  /* HINT */
+  .hint { font-size: 0.66rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; text-align: center; padding: 0 10px; }
+
+  /* LYRICS PICKER */
+  .lyrics-picker { position: absolute; left: 20px; right: 20px; z-index: 50; background: var(--surface); border: 1px solid #2a2a4a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); overflow: hidden; transform: scaleY(0); transform-origin: top; opacity: 0; transition: transform 0.2s ease, opacity 0.2s ease; pointer-events: none; }
+  .lyrics-picker.open { transform: scaleY(1); opacity: 1; pointer-events: auto; }
+  .picker-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #2a2a4a; }
+  .picker-title  { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .picker-close  { background: none; border: none; color: var(--muted); font-size: 1rem; cursor: pointer; padding: 0 4px; }
+  .picker-list   { max-height: 220px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .picker-item   { padding: 10px 14px; border-bottom: 1px solid #1a1a2e; cursor: pointer; }
+  .picker-item:last-child { border-bottom: none; }
+  .picker-item:active { background: #1e1e3a; }
+  .picker-item-date    { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 3px; }
+  .picker-item-preview { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .picker-empty { padding: 20px 14px; text-align: center; color: var(--muted); font-size: 0.75rem; }
+
+  /* HISTORY DRAWER */
+  .history-drawer { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; background: var(--bg); transform: translateY(100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
+  .history-drawer.open { transform: translateY(0); }
+  .drawer-header { padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a2a4a; flex-shrink: 0; }
+  .drawer-title  { font-family: 'Crimson Pro', serif; font-size: 1.2rem; font-weight: 600; color: var(--gold); }
+  .drawer-close  { background: none; border: 1px solid #2a2a4a; border-radius: 50%; width: 32px; height: 32px; color: var(--muted); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .drawer-close:active { background: #1e1e3a; }
+  .storage-info  { padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 1px solid #1a1a2e; }
+  .storage-text  { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
+  .storage-text span { color: var(--text); }
+  .clear-all-btn { padding: 5px 12px; background: none; border: 1px solid #6a2a2a; border-radius: 14px; color: var(--danger); font-family: 'Inter', sans-serif; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+  .clear-all-btn:active { background: #2a0a0a; }
+  .rec-list  { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 20px 30px; }
+  .rec-empty { text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; margin-top: 40px; }
+  .rec-item  { background: var(--surface); border: 1px solid #2a2a4a; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  .rec-meta  { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+  .rec-date  { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--text); }
+  .rec-dur   { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.08em; background: #1e1e3a; padding: 2px 8px; border-radius: 10px; }
+  .rec-time  { font-size: 0.65rem; color: var(--muted); margin-bottom: 8px; }
+  .rec-actions { display: flex; gap: 8px; }
+  .rec-btn { padding: 6px 14px; background: none; border-radius: 20px; font-family: 'Inter', sans-serif; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+  .rec-btn.play   { border: 1px solid var(--gold-dim); color: var(--gold); }
+  .rec-btn.export { border: 1px solid #3a6a3a; color: #6adb6a; }
+  .rec-btn.del    { border: 1px solid #6a2a2a; color: var(--danger); }
+  .rec-btn:active { background: #1e1e3a; }
+  .rec-btn.playing-now { border-color: var(--purple); color: var(--purple); }
 </style>
 </head>
 <body>
@@ -126,187 +161,581 @@
 
   <header>
     <div class="header-title">
-      <h1>Gurbani Tutor</h1>
+      <h1>Kirtan 1</h1>
       <p>Listen · Sing · Learn</p>
     </div>
-    <button id="installBtn" onclick="installApp()">⊕ Install</button>
+    <div class="header-actions">
+      <button class="history-btn" id="historyBtn" onclick="openHistory()">⏱ History</button>
+      <button id="installBtn" onclick="installApp()">⊕ Install</button>
+    </div>
   </header>
 
+  <!-- TABS: Listen · 58s · XL -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('listen')">Listen</button>
-    <button class="tab"        onclick="switchTab('sing')">Sing</button>
+    <button class="tab listen-tab active" onclick="switchTab(0)">♪ Listen</button>
+    <button class="tab"                   onclick="switchTab(1)">58s</button>
+    <button class="tab xl-tab"            onclick="switchTab(2)">XL</button>
   </div>
 
-  <!-- LISTEN -->
-  <div class="panel active" id="panel-listen">
-    <div class="shabad-wrap"><img src="1.jpg" alt="Shabad"></div>
-    <div class="listen-body">
-      <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
-      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-      <p class="hint">Tap to listen to the tutor</p>
+  <!-- REFERENCE SLOTS -->
+  <div class="ref-row">
+    <div class="ref-slot-tabs">
+      <button class="ref-slot-btn active" id="slotBtnPng"  onclick="switchRefSlot('png')">📷 Image</button>
+      <button class="ref-slot-btn"        id="slotBtnText" onclick="switchRefSlot('text')">✎ Shabad</button>
+    </div>
+    <button class="ref-toggle-btn" id="refToggleBtn" onclick="toggleRef()">Hide</button>
+  </div>
+
+  <div class="ref-area" id="refArea">
+    <div class="png-slot active" id="pngSlot">
+      <img src="1.jpg" alt="Shabad">
+    </div>
+    <textarea id="lyricsBox" class="lyrics-box"
+      placeholder="Paste shabad, paath, song lyrics or notes here…"
+      oninput="onLyricsInput()"></textarea>
+    <div class="shabad-actions" id="shabadActions">
+      <button class="ref-toggle-btn" onclick="newLyrics()">+ New</button>
+      <button class="ref-toggle-btn" onclick="toggleLyricsPicker()">⏱ History</button>
     </div>
   </div>
 
-  <!-- SING -->
-  <div class="panel" id="panel-sing">
-    <div class="shabad-wrap"><img src="1.jpg" alt="Shabad"></div>
+  <!-- SHABAD HISTORY PICKER -->
+  <div class="lyrics-picker" id="lyricsPicker">
+    <div class="picker-header">
+      <span class="picker-title">Shabad History (last 10)</span>
+      <button class="picker-close" onclick="closeLyricsPicker()">✕</button>
+    </div>
+    <div class="picker-list" id="lyricsPickerList"></div>
+  </div>
+
+  <!-- PANEL 0: LISTEN -->
+  <div class="panel active" id="panel-0">
     <div class="sing-body">
       <div class="ring-wrap">
-        <svg class="ring-svg" viewBox="0 0 130 130">
-          <circle class="ring-track" cx="65" cy="65" r="54"/>
-          <circle class="ring-fill" id="ringFill" cx="65" cy="65" r="54"/>
+        <svg class="ring-svg" viewBox="0 0 134 134">
+          <circle class="ring-track" cx="67" cy="67" r="52"/>
+          <circle class="ring-fill mode-listen" id="listen-ring" cx="67" cy="67" r="52"/>
         </svg>
         <div class="ring-center">
-          <span class="ring-seconds" id="ringSeconds">58</span>
-          <span class="ring-label"   id="ringLabel">seconds</span>
+          <span class="ring-seconds" id="listen-secs" style="color:var(--teal);font-size:2.4rem">♪</span>
+          <span class="ring-label"   id="listen-label">tutor</span>
         </div>
       </div>
-      <p class="state-label" id="stateLabel">Ready</p>
-      <div class="pb-wrap"><div class="pb-bar" id="pbBar"></div></div>
-      <button class="start-btn" id="startBtn" onclick="startRecording()">Start</button>
+      <p class="duration-badge" id="listen-badge">Tap to hear the tutor</p>
+      <p class="state-label" id="listen-state">Ready</p>
+      <div class="pb-wrap"><div class="pb-bar" id="listen-pb" style="background:var(--teal)"></div></div>
+      <button class="listen-btn" id="listenBtn" onclick="toggleListen()">▶ Play Tutor</button>
+      <p class="hint">Listen carefully · then switch to 58s or XL to sing</p>
     </div>
   </div>
 
-</div>
+  <!-- PANEL 1: 58s ECHO -->
+  <div class="panel" id="panel-1">
+    <div class="sing-body">
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 134 134">
+          <circle class="ring-track" cx="67" cy="67" r="52"/>
+          <circle class="ring-fill mode-record" cx="67" cy="67" r="52"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-seconds">58</span>
+          <span class="ring-label">seconds</span>
+        </div>
+      </div>
+      <p class="duration-badge">Record <span>58s</span> · Playback at <span>60s</span></p>
+      <p class="state-label" id="state-1">Ready</p>
+      <div class="pb-wrap"><div class="pb-bar" id="pb-1"></div></div>
+      <button class="start-btn" id="btn-1" onclick="startEcho()">Start</button>
+      <div class="action-row" id="act-1">
+        <button class="act-btn replay" onclick="replayLast(1)">▶ Replay</button>
+        <button class="act-btn export" onclick="exportLast(1)">↑ Export</button>
+        <button class="act-btn del"    onclick="deleteLast(1)">✕ Delete</button>
+      </div>
+      <p class="hint">Sing along · then hear yourself back</p>
+    </div>
+  </div>
 
-<audio id="tutorAudio" src="1.m4a"></audio>
+  <!-- PANEL 2: XL -->
+  <div class="panel" id="panel-2">
+    <div class="sing-body">
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 134 134">
+          <circle class="ring-track" cx="67" cy="67" r="52"/>
+          <circle class="ring-fill mode-xl" cx="67" cy="67" r="52"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-seconds" id="xl-mm">0:00</span>
+          <span class="ring-label"   id="xl-label">ready</span>
+        </div>
+      </div>
+      <p class="duration-badge">Unlimited recording · Stop when done</p>
+      <p class="state-label" id="state-2">Ready</p>
+      <div class="pb-wrap"><div class="pb-bar" id="pb-2"></div></div>
+      <button class="start-btn"    id="btn-2"   onclick="startXL()">Start Recording</button>
+      <button class="stop-btn"     id="stop-2"  onclick="stopXL()">Stop Recording</button>
+      <button class="reset-xl-btn" id="reset-2" onclick="resetXL()">↺ New Recording</button>
+      <div class="action-row" id="act-2">
+        <button class="act-btn replay" onclick="replayLast(2)">▶ Replay</button>
+        <button class="act-btn export" onclick="exportLast(2)">↑ Export</button>
+        <button class="act-btn del"    onclick="deleteLast(2)">✕ Delete</button>
+      </div>
+      <p class="hint">Record as long as you need · XL has no time limit</p>
+    </div>
+  </div>
+
+</div><!-- .shell -->
+
+<audio id="tutorAudio"    src="1.m4a" preload="auto"></audio>
 <audio id="playbackAudio"></audio>
 
+<!-- HISTORY DRAWER -->
+<div class="history-drawer" id="historyDrawer">
+  <div class="drawer-header">
+    <span class="drawer-title">Recent Recordings</span>
+    <button class="drawer-close" onclick="closeHistory()">✕</button>
+  </div>
+  <div class="storage-info">
+    <span class="storage-text" id="storageText">No recordings stored</span>
+    <button class="clear-all-btn" onclick="confirmClearAll()">Clear All</button>
+  </div>
+  <div class="rec-list" id="recList">
+    <p class="rec-empty">No recordings yet.</p>
+  </div>
+</div>
+
 <script>
+/* ── CONFIG ── */
+const REC_SECS   = 58;
+const PLAY_AT_MS = 60000;
+const CIRC       = 2 * Math.PI * 52;
+const MAX_HISTORY = 5;
+
+/* ── APP IDENTITY — change only manifest.json, nothing here ever needs editing ── */
+let APP_ID   = 'kirtan1';   // safe fallback
+let APP_NAME = 'Kirtan 1';
+fetch('./manifest.json').then(r=>r.json()).then(m=>{
+  APP_NAME = m.short_name || m.name || APP_NAME;
+  APP_ID   = APP_NAME.replace(/\s+/g,'').toLowerCase(); // "Kirtan 2" → "kirtan2"
+  document.querySelector('h1').textContent = APP_NAME;
+}).catch(()=>{});
+
 /* ── INSTALL ── */
 let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('installBtn').style.display = 'block';
-});
-window.addEventListener('appinstalled', () => {
-  document.getElementById('installBtn').style.display = 'none';
-  deferredPrompt = null;
-});
-function installApp() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('installBtn').style.display = 'block'; });
+window.addEventListener('appinstalled', () => { document.getElementById('installBtn').style.display = 'none'; deferredPrompt = null; });
+function installApp() { if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; }); }
+
+/* ── REFERENCE SLOTS ── */
+const lyricsBox    = document.getElementById('lyricsBox');
+const refToggleBtn = document.getElementById('refToggleBtn');
+let refVisible = true;
+let activeSlot = 'png';
+const MAX_LYR_HIST   = 10;
+// All storage keys are built from APP_ID — no manual changes ever needed
+const key = s => APP_ID + '_' + s;  // e.g. key('lyrics') → 'kirtan2_lyrics'
+
+function switchRefSlot(slot) {
+  activeSlot = slot;
+  document.getElementById('slotBtnPng').classList.toggle('active',    slot==='png');
+  document.getElementById('slotBtnText').classList.toggle('active',   slot==='text');
+  document.getElementById('pngSlot').classList.toggle('active',       slot==='png');
+  lyricsBox.classList.toggle('active',                                slot==='text');
+  document.getElementById('shabadActions').classList.toggle('active', slot==='text');
+  try { localStorage.setItem(key('activeSlot'), slot); } catch(e) {}
 }
-
-/* ── TABS ── */
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) =>
-    t.classList.toggle('active', (i === 0) === (name === 'listen')));
-  document.querySelectorAll('.panel').forEach(p =>
-    p.classList.toggle('active', p.id === 'panel-' + name));
+function toggleRef() {
+  refVisible = !refVisible;
+  document.getElementById('refArea').classList.toggle('hidden', !refVisible);
+  refToggleBtn.textContent = refVisible ? 'Hide' : 'Show';
+  try { localStorage.setItem(key('refVis'), refVisible ? '1' : '0'); } catch(e) {}
 }
-
-/* ── LISTEN ── */
-const tutorAudio  = document.getElementById('tutorAudio');
-const playBtn     = document.getElementById('playBtn');
-const progressBar = document.getElementById('progressBar');
-
-function togglePlay() {
-  tutorAudio.paused ? tutorAudio.play() : tutorAudio.pause();
+function onLyricsInput() { try { localStorage.setItem(key('lyrics'), lyricsBox.value); } catch(e) {} }
+function getLyricsHistory() { try { return JSON.parse(localStorage.getItem(key('lyricsHistory')) || '[]'); } catch(e) { return []; } }
+function saveLyricsToHistory() {
+  const text = lyricsBox.value.trim(); if (!text) return;
+  try {
+    let h = getLyricsHistory();
+    if (h.length && h[0].text === text) return;
+    h.unshift({ text, ts: Date.now() });
+    if (h.length > MAX_LYR_HIST) h = h.slice(0, MAX_LYR_HIST);
+    localStorage.setItem(key('lyricsHistory'), JSON.stringify(h));
+  } catch(e) {}
 }
-tutorAudio.addEventListener('play',  () => { playBtn.textContent = '⏸'; playBtn.classList.add('playing'); });
-tutorAudio.addEventListener('pause', () => { playBtn.textContent = '▶'; playBtn.classList.remove('playing'); });
-tutorAudio.addEventListener('ended', () => { playBtn.textContent = '▶'; playBtn.classList.remove('playing'); progressBar.style.width = '0%'; });
-tutorAudio.addEventListener('timeupdate', () => {
-  if (tutorAudio.duration) progressBar.style.width = (tutorAudio.currentTime / tutorAudio.duration * 100) + '%';
-});
-
-/* ── SING ── */
-const RECORD_SECS       = 58;
-const PLAYBACK_DELAY_MS = 2000;
-const CIRCUMFERENCE     = 2 * Math.PI * 54;
-
-const ringFill      = document.getElementById('ringFill');
-const ringSeconds   = document.getElementById('ringSeconds');
-const ringLabel     = document.getElementById('ringLabel');
-const stateLabel    = document.getElementById('stateLabel');
-const startBtn      = document.getElementById('startBtn');
-const pbBar         = document.getElementById('pbBar');
-const playbackAudio = document.getElementById('playbackAudio');
-
-let mediaRecorder, chunks = [], countdownTimer, blobURL = null;
-
-function setRing(fraction) { ringFill.style.strokeDashoffset = CIRCUMFERENCE * (1 - fraction); }
-function resetRing() { setRing(0); ringSeconds.textContent = RECORD_SECS; ringLabel.textContent = 'seconds'; }
-
-function startRecording() {
-  navigator.mediaDevices.getUserMedia({ audio: {
-    echoCancellation: false,
-    noiseSuppression: false,
-    autoGainControl: false
-  }}).then(stream => {
-    if (blobURL) { URL.revokeObjectURL(blobURL); blobURL = null; }
-    chunks = [];
-
-    // Pick best supported format
-    let mimeType = 'audio/webm';
-    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-      mimeType = 'audio/webm;codecs=opus';
-    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-      mimeType = 'audio/mp4';
-    }
-
-    mediaRecorder = new MediaRecorder(stream, { mimeType, audioBitsPerSecond: 128000 });
-    mediaRecorder.ondataavailable = e => chunks.push(e.data);
-    mediaRecorder.onstop = () => {
-      stream.getTracks().forEach(t => t.stop());
-      const blob = new Blob(chunks, { type: mimeType });
-      blobURL = URL.createObjectURL(blob);
-      setTimeout(() => playback(blobURL), PLAYBACK_DELAY_MS);
-    };
-
-    mediaRecorder.start();
-    startBtn.disabled = true;
-    stateLabel.className = 'state-label recording';
-    stateLabel.textContent = 'Recording…';
-    pbBar.style.width = '0%';
-
-    let elapsed = 0;
-    setRing(0);
-    ringSeconds.textContent = RECORD_SECS;
-
-    countdownTimer = setInterval(() => {
-      elapsed++;
-      const remaining = RECORD_SECS - elapsed;
-      setRing(elapsed / RECORD_SECS);
-      ringSeconds.textContent = remaining > 0 ? remaining : 0;
-      if (elapsed >= RECORD_SECS) {
-        clearInterval(countdownTimer);
-        mediaRecorder.stop();
-        stateLabel.className = 'state-label';
-        stateLabel.textContent = 'Processing…';
-        ringLabel.textContent = 'done';
-      }
-    }, 1000);
-
-  }).catch(() => {
-    stateLabel.textContent = 'Microphone access denied';
+function newLyrics() {
+  const text = lyricsBox.value.trim();
+  if (text && !confirm('Clear current shabad and start fresh?')) return;
+  if (text) saveLyricsToHistory();
+  lyricsBox.value = ''; try { localStorage.setItem(key('lyrics'), ''); } catch(e) {}
+  lyricsBox.focus(); if (!refVisible) toggleRef();
+}
+function toggleLyricsPicker() {
+  const p = document.getElementById('lyricsPicker');
+  if (p.classList.contains('open')) { closeLyricsPicker(); return; }
+  renderLyricsPicker(); p.classList.add('open');
+}
+function closeLyricsPicker() { document.getElementById('lyricsPicker').classList.remove('open'); }
+function renderLyricsPicker() {
+  const h = getLyricsHistory();
+  const list = document.getElementById('lyricsPickerList');
+  if (!h.length) { list.innerHTML = '<p class="picker-empty">No saved shabads yet.<br>Saved when you start a recording.</p>'; return; }
+  list.innerHTML = '';
+  h.forEach((entry, i) => {
+    const div = document.createElement('div'); div.className = 'picker-item';
+    const d = new Date(entry.ts);
+    const ds = d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}) + ' · ' + d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+    const prev = entry.text.split('\n')[0].slice(0,60) + (entry.text.length>60?'…':'');
+    div.innerHTML = `<div class="picker-item-date">${ds}</div><div class="picker-item-preview">${prev}</div>`;
+    div.onclick = () => loadLyricsFromHistory(i); list.appendChild(div);
   });
 }
+function loadLyricsFromHistory(idx) {
+  const h = getLyricsHistory(); if (!h[idx]) return;
+  const cur = lyricsBox.value.trim(); if (cur && cur !== h[idx].text) saveLyricsToHistory();
+  lyricsBox.value = h[idx].text; try { localStorage.setItem(key('lyrics'), h[idx].text); } catch(e) {}
+  closeLyricsPicker(); if (!refVisible) toggleRef(); lyricsBox.scrollTop = 0;
+}
+function initLyrics() {
+  try {
+    const t = localStorage.getItem(key('lyrics')); if (t !== null) lyricsBox.value = t;
+    switchRefSlot(localStorage.getItem(key('activeSlot')) || 'png');
+    if (localStorage.getItem(key('refVis')) === '0') { refVisible = true; toggleRef(); }
+  } catch(e) {}
+}
+document.addEventListener('click', e => {
+  const p = document.getElementById('lyricsPicker');
+  if (p.classList.contains('open') && !p.contains(e.target) && !e.target.closest('.ref-row') && !e.target.closest('.shabad-actions')) closeLyricsPicker();
+});
 
-function playback(url) {
-  stateLabel.className = 'state-label playing';
-  stateLabel.textContent = 'Playing back…';
-  playbackAudio.src = url;
-  playbackAudio.play();
-  playbackAudio.ontimeupdate = () => {
-    if (playbackAudio.duration)
-      pbBar.style.width = (playbackAudio.currentTime / playbackAudio.duration * 100) + '%';
-  };
+/* ── TABS — immune to active recording ── */
+let activeTabIdx  = 0;
+let pendingTabIdx = null;
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  const recPanel = (activeSessionIdx !== null) ? activeSessionIdx : null;
+  document.querySelectorAll('.panel').forEach((p,i) => {
+    p.classList.toggle('active', recPanel !== null ? (i === recPanel || i === idx) : i === idx);
+  });
+  if (recPanel === null) activeTabIdx = idx; else pendingTabIdx = idx;
+}
+function applyPendingTab() {
+  if (pendingTabIdx !== null && activeSessionIdx === null) { const t = pendingTabIdx; pendingTabIdx = null; switchTab(t); }
+}
+
+/* ── LISTEN ENGINE (panel 0) ── */
+const tutorAudio = document.getElementById('tutorAudio');
+let listenPlaying  = false;
+let listenInterval = null;
+
+function toggleListen() { listenPlaying ? stopListen() : playListen(); }
+
+function playListen() {
+  listenPlaying = true;
+  document.getElementById('listenBtn').textContent    = '■ Stop';
+  document.getElementById('listen-state').className   = 'state-label listening';
+  document.getElementById('listen-state').textContent = 'Playing tutor…';
+  const ring = document.getElementById('listen-ring');
+  const secs = document.getElementById('listen-secs');
+  const lbl  = document.getElementById('listen-label');
+  const pb   = document.getElementById('listen-pb');
+  ring.classList.remove('mode-record','mode-xl'); ring.classList.add('mode-listen');
+  secs.style.fontSize = '2rem'; secs.style.color = 'var(--teal)';
+  tutorAudio.currentTime = 0;
+  tutorAudio.play().catch(() => {
+    document.getElementById('listen-state').textContent = 'Could not load 1.m4a';
+    resetListenUI();
+  });
+  if (listenInterval) clearInterval(listenInterval);
+  listenInterval = setInterval(() => {
+    if (!tutorAudio.duration) return;
+    const elapsed = tutorAudio.currentTime, total = tutorAudio.duration;
+    setRing(ring, elapsed / total);
+    secs.textContent = Math.max(0, Math.round(total - elapsed));
+    lbl.textContent  = 'seconds left';
+    pb.style.width   = (elapsed / total * 100) + '%';
+    document.getElementById('listen-badge').textContent = 'Tutor · ' + fmtDuration(Math.round(total)) + ' total';
+  }, 300);
+  tutorAudio.onended = () => resetListenUI();
+}
+
+function stopListen() {
+  tutorAudio.pause(); tutorAudio.currentTime = 0;
+  clearInterval(listenInterval); listenInterval = null;
+  resetListenUI();
+}
+
+function resetListenUI() {
+  listenPlaying = false;
+  if (listenInterval) { clearInterval(listenInterval); listenInterval = null; }
+  const ring = document.getElementById('listen-ring');
+  setRing(ring, 0);
+  ring.classList.remove('mode-record','mode-xl','mode-play'); ring.classList.add('mode-listen');
+  const secs = document.getElementById('listen-secs');
+  secs.textContent = '♪'; secs.style.color = 'var(--teal)'; secs.style.fontSize = '2.4rem';
+  document.getElementById('listen-label').textContent  = 'tutor';
+  document.getElementById('listen-pb').style.width     = '0%';
+  document.getElementById('listen-state').className    = 'state-label';
+  document.getElementById('listen-state').textContent  = 'Ready';
+  document.getElementById('listenBtn').textContent     = '▶ Play Tutor';
+  document.getElementById('listen-badge').textContent  = 'Tap to hear the tutor';
+}
+
+/* ── HELPERS ── */
+const playbackAudio = document.getElementById('playbackAudio');
+let blobURLs    = [null, null, null];
+let lastBlobs   = [null, null, null];
+let lastMimes   = ['audio/webm','audio/webm','audio/webm'];
+let lastDurs    = [0, 0, 0];
+let pbInterval  = null;
+let activeSessionIdx = null;
+
+function setRing(el, fraction) {
+  el.style.strokeDashoffset = CIRC * (1 - Math.max(0, Math.min(1, fraction)));
+}
+function fmtMM(s) { const m=Math.floor(s/60); return `${m}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+function fmtDuration(s) { const m=Math.floor(s/60),sec=Math.round(s%60); return m>0?`${m}m ${String(sec).padStart(2,'0')}s`:`${sec}s`; }
+function fmtBytes(b) { return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'; }
+function fmtDate(ts) { return new Date(ts).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}); }
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }
+function fmtExportName(ts) {
+  const d=new Date(ts), p=n=>String(n).padStart(2,'0');
+  return `${APP_ID}_${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}.webm`;
+}
+
+function getEls(idx) {
+  const panel = document.getElementById('panel-'+idx);
+  return { ringFill: panel.querySelector('.ring-fill'), ringSeconds: panel.querySelector('.ring-seconds'),
+    ringLabel: panel.querySelector('.ring-label'), stateLabel: panel.querySelector('.state-label'),
+    pbBar: panel.querySelector('.pb-bar'), btn: panel.querySelector('.start-btn'), actionRow: panel.querySelector('.action-row') };
+}
+
+function startPlayback(idx, url, totalSecs) {
+  const { ringFill, ringSeconds, ringLabel, stateLabel, pbBar } = getEls(idx);
+  ringFill.classList.remove('mode-record','mode-xl'); ringFill.classList.add('mode-play');
+  ringSeconds.style.color = 'var(--purple)'; ringSeconds.style.fontSize = '2rem';
+  setRing(ringFill, 1); ringSeconds.textContent = Math.round(totalSecs);
+  ringLabel.textContent = 'seconds left';
+  stateLabel.className = 'state-label playing'; stateLabel.textContent = 'Playing back…';
+  if (pbInterval) clearInterval(pbInterval);
+  playbackAudio.src = url; playbackAudio.play().catch(e => console.warn(e));
+  pbInterval = setInterval(() => {
+    if (!playbackAudio.duration) return;
+    const el = playbackAudio.currentTime, rem = Math.max(0, Math.round(totalSecs - el));
+    setRing(ringFill, 1 - el/playbackAudio.duration);
+    ringSeconds.textContent = rem;
+    pbBar.style.width = (el/playbackAudio.duration*100)+'%';
+  }, 400);
   playbackAudio.onended = () => {
-    pbBar.style.width = '0%';
-    stateLabel.className = 'state-label';
-    stateLabel.textContent = 'Ready';
-    resetRing();
-    startBtn.disabled = false;
+    clearInterval(pbInterval); pbInterval = null;
+    pbBar.style.width = '0%'; activeSessionIdx = null; releaseWakeLock();
+    showActionRow(idx);
+    if (idx === 2) document.getElementById('reset-2').classList.add('visible');
+    const rf = getEls(idx).ringFill;
+    rf.classList.remove('mode-play','mode-xl'); rf.classList.add('mode-record');
+    setRing(rf, 0);
+    const rs = getEls(idx).ringSeconds, rl = getEls(idx).ringLabel;
+    rs.style.color = 'var(--gold)'; rs.style.fontSize = '2rem';
+    if (idx === 1) { rs.textContent = REC_SECS; rl.textContent = 'seconds'; }
+    else           { rs.textContent = '0:00';   rl.textContent = 'ready'; }
+    getEls(idx).stateLabel.className   = 'state-label';
+    getEls(idx).stateLabel.textContent = 'Done';
+    getEls(idx).btn.disabled = false;
+    applyPendingTab();
   };
 }
 
-resetRing();
-</script>
+function showActionRow(idx) { document.getElementById('act-'+idx).classList.add('visible'); }
+function hideActionRow(idx) { document.getElementById('act-'+idx).classList.remove('visible'); }
 
+async function replayLast(idx) { if (!blobURLs[idx]) return; await acquireWakeLock(); activeSessionIdx = idx; startPlayback(idx, blobURLs[idx], lastDurs[idx]); }
+async function exportLast(idx) { if (!lastBlobs[idx]) return; await shareOrDownload(lastBlobs[idx], fmtExportName(Date.now()), lastMimes[idx]); }
+function deleteLast(idx) {
+  if (blobURLs[idx]) { URL.revokeObjectURL(blobURLs[idx]); blobURLs[idx]=null; }
+  lastBlobs[idx]=null; hideActionRow(idx);
+  if (idx===1) { getEls(idx).stateLabel.className='state-label'; getEls(idx).stateLabel.textContent='Ready'; getEls(idx).btn.disabled=false; setRing(getEls(idx).ringFill,0); }
+  else resetXL();
+}
+
+async function shareOrDownload(blob, filename, mimeType) {
+  if (navigator.share && navigator.canShare && navigator.canShare({ files:[new File([blob],filename,{type:mimeType})] })) {
+    try { await navigator.share({ files:[new File([blob],filename,{type:mimeType})], title:APP_NAME+' Recording' }); return; } catch(e) {}
+  }
+  const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+
+/* ── WAKE LOCK ── */
+let wakeLock = null;
+async function acquireWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {} }
+async function releaseWakeLock() { if (wakeLock) { try { await wakeLock.release(); } catch(e) {} wakeLock=null; } }
+document.addEventListener('visibilitychange', async () => { if (document.visibilityState==='visible' && activeSessionIdx!==null) await acquireWakeLock(); });
+
+/* ── INDEXEDDB ── */
+const DB_NAME=APP_ID+'DB', DB_VER=2;
+let db=null, useIDB=false;
+function openDB() {
+  return new Promise((res,rej) => {
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{ const d=e.target.result; if(!d.objectStoreNames.contains('chunks')) d.createObjectStore('chunks',{autoIncrement:true}); if(!d.objectStoreNames.contains('recordings')) d.createObjectStore('recordings',{keyPath:'id',autoIncrement:true}); };
+    req.onsuccess=e=>res(e.target.result); req.onerror=e=>rej(e.target.error);
+  });
+}
+async function initDB() { try { db=await openDB(); useIDB=true; } catch(e) {} }
+function idbPut(store,val) { return new Promise((res,rej)=>{ const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).put(val); req.onsuccess=()=>res(); req.onerror=e=>rej(e.target.error); }); }
+function idbGetAll(store) { return new Promise((res,rej)=>{ const tx=db.transaction(store,'readonly'),req=tx.objectStore(store).getAll(); req.onsuccess=e=>res(e.target.result||[]); req.onerror=e=>rej(e.target.error); }); }
+function idbDelete(store,key) { return new Promise((res,rej)=>{ const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).delete(key); req.onsuccess=()=>res(); req.onerror=e=>rej(e.target.error); }); }
+function idbClear(store) { return new Promise((res,rej)=>{ const tx=db.transaction(store,'readwrite'),req=tx.objectStore(store).clear(); req.onsuccess=()=>res(); req.onerror=e=>rej(e.target.error); }); }
+async function saveChunk(sid,blob) { await idbPut('chunks',{sessionId:sid,blob,ts:Date.now()}); }
+async function readChunks(sid) { const all=await idbGetAll('chunks'); return all.filter(r=>r.sessionId===sid).sort((a,b)=>a.ts-b.ts).map(r=>r.blob); }
+async function clearChunks(sid) {
+  const tx=db.transaction('chunks','readwrite'),store=tx.objectStore('chunks'),req=store.openCursor();
+  return new Promise((res,rej)=>{ req.onsuccess=e=>{ const c=e.target.result; if(c){ if(c.value.sessionId===sid) c.delete(); c.continue(); } else res(); }; req.onerror=e=>rej(e.target.error); });
+}
+async function saveRecording(blob,dur,mime) {
+  if(!useIDB) return;
+  const newId=await new Promise((res,rej)=>{ const tx=db.transaction('recordings','readwrite'),req=tx.objectStore('recordings').add({blob,duration:dur,ts:Date.now(),mimeType:mime}); req.onsuccess=e=>res(e.target.result); req.onerror=e=>rej(e.target.error); });
+  const all=await idbGetAll('recordings');
+  if(all.length>MAX_HISTORY){ all.sort((a,b)=>a.ts-b.ts); for(const r of all.slice(0,all.length-MAX_HISTORY)) await idbDelete('recordings',r.id); }
+}
+async function getAllRecordings() { if(!useIDB) return []; const all=await idbGetAll('recordings'); return all.sort((a,b)=>b.ts-a.ts); }
+async function deleteRecording(id) { if(useIDB) await idbDelete('recordings',id); }
+
+/* ── 58s ECHO ENGINE ── */
+function startEcho() {
+  const idx=1;
+  const { ringFill, ringSeconds, ringLabel, stateLabel, pbBar, btn } = getEls(idx);
+  hideActionRow(idx);
+  navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } }).then(async stream => {
+    saveLyricsToHistory();
+    if (blobURLs[idx]) { URL.revokeObjectURL(blobURLs[idx]); blobURLs[idx]=null; }
+    activeSessionIdx=idx;
+    const sid='1_'+Date.now(); let memChunks=[];
+    let mime='audio/webm';
+    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime='audio/webm;codecs=opus';
+    else if (MediaRecorder.isTypeSupported('audio/mp4')) mime='audio/mp4';
+    const mr=new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:128000});
+    mr.ondataavailable=async e=>{ if(!e.data||!e.data.size) return; if(useIDB){try{await saveChunk(sid,e.data);}catch(err){memChunks.push(e.data);}}else{memChunks.push(e.data);}};
+    mr.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      stateLabel.className='state-label waiting'; stateLabel.textContent='Assembling…';
+      let chunks; if(useIDB){try{chunks=await readChunks(sid);if(memChunks.length)chunks=chunks.concat(memChunks);}catch(e){chunks=memChunks;}}else{chunks=memChunks;}
+      const blob=new Blob(chunks,{type:mime}); blobURLs[idx]=URL.createObjectURL(blob);
+      lastBlobs[idx]=blob; lastMimes[idx]=mime; lastDurs[idx]=REC_SECS;
+      if(useIDB) clearChunks(sid).catch(()=>{});
+      saveRecording(blob,REC_SECS,mime).catch(()=>{});
+      const wait=PLAY_AT_MS-REC_SECS*1000;
+      stateLabel.className='state-label waiting'; stateLabel.textContent='Get ready…';
+      setTimeout(()=>startPlayback(idx,blobURLs[idx],REC_SECS), wait);
+    };
+    await acquireWakeLock(); mr.start(1000);
+    btn.disabled=true;
+    ringFill.classList.remove('mode-play','mode-xl'); ringFill.classList.add('mode-record');
+    ringSeconds.style.color='var(--gold)'; ringSeconds.style.fontSize='2rem';
+    stateLabel.className='state-label recording'; stateLabel.textContent='Recording…';
+    pbBar.style.width='0%'; setRing(ringFill,0); ringSeconds.textContent=REC_SECS; ringLabel.textContent='seconds';
+    let elapsed=0;
+    const recTimer=setInterval(()=>{
+      elapsed++;
+      const rem=REC_SECS-elapsed;
+      setRing(ringFill,elapsed/REC_SECS); ringSeconds.textContent=rem>0?rem:0;
+      if(elapsed>=REC_SECS){ clearInterval(recTimer); mr.stop(); stateLabel.className='state-label'; stateLabel.textContent='Processing…'; ringLabel.textContent='done'; }
+    },1000);
+  }).catch(()=>{ getEls(idx).stateLabel.className='state-label'; getEls(idx).stateLabel.textContent='Microphone access denied'; });
+}
+
+/* ── XL ENGINE ── */
+let xlMR=null, xlStream=null, xlTimer=null, xlElapsed=0, xlSid=null, xlMem=[], xlMime='audio/webm';
+
+function resetXL() {
+  const rf=document.getElementById('panel-2').querySelector('.ring-fill');
+  rf.classList.remove('mode-record','mode-play'); rf.classList.add('mode-xl'); setRing(rf,0);
+  const mm=document.getElementById('xl-mm'), lbl=document.getElementById('xl-label');
+  mm.textContent='0:00'; mm.style.fontSize='1.8rem'; mm.style.color='#e07040'; lbl.textContent='ready';
+  document.getElementById('state-2').className='state-label'; document.getElementById('state-2').textContent='Ready';
+  document.getElementById('pb-2').style.width='0%';
+  document.getElementById('btn-2').disabled=false; document.getElementById('btn-2').style.display='';
+  document.getElementById('stop-2').classList.remove('visible');
+  document.getElementById('reset-2').classList.remove('visible');
+  if(!lastBlobs[2]) document.getElementById('act-2').classList.remove('visible');
+}
+
+async function startXL() {
+  hideActionRow(2);
+  navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } }).then(async stream => {
+    saveLyricsToHistory();
+    if(blobURLs[2]){URL.revokeObjectURL(blobURLs[2]);blobURLs[2]=null;}
+    xlStream=stream; xlElapsed=0; xlMem=[]; xlSid='2_'+Date.now(); activeSessionIdx=2;
+    xlMime='audio/webm';
+    if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) xlMime='audio/webm;codecs=opus';
+    else if(MediaRecorder.isTypeSupported('audio/mp4')) xlMime='audio/mp4';
+    xlMR=new MediaRecorder(stream,{mimeType:xlMime,audioBitsPerSecond:128000});
+    xlMR.ondataavailable=async e=>{if(!e.data||!e.data.size)return;if(useIDB){try{await saveChunk(xlSid,e.data);}catch(err){xlMem.push(e.data);}}else{xlMem.push(e.data);}};
+    xlMR.onstop=async()=>{
+      xlStream.getTracks().forEach(t=>t.stop());
+      const st=document.getElementById('state-2'); st.className='state-label waiting'; st.textContent='Assembling…';
+      let chunks; if(useIDB){try{chunks=await readChunks(xlSid);if(xlMem.length)chunks=chunks.concat(xlMem);}catch(e){chunks=xlMem;}}else{chunks=xlMem;}
+      const blob=new Blob(chunks,{type:xlMime}); blobURLs[2]=URL.createObjectURL(blob);
+      lastBlobs[2]=blob; lastMimes[2]=xlMime; lastDurs[2]=xlElapsed;
+      if(useIDB) clearChunks(xlSid).catch(()=>{});
+      saveRecording(blob,xlElapsed,xlMime).catch(()=>{});
+      const rf=document.getElementById('panel-2').querySelector('.ring-fill');
+      rf.classList.remove('mode-record','mode-xl'); rf.classList.add('mode-play');
+      const mm=document.getElementById('xl-mm'), lbl=document.getElementById('xl-label');
+      mm.style.color='var(--purple)'; mm.style.fontSize='2rem';
+      let cd=3; mm.textContent=cd; lbl.textContent='playback in'; setRing(rf,cd/3);
+      const cdt=setInterval(()=>{ cd--; if(cd<=0){clearInterval(cdt); document.getElementById('reset-2').classList.add('visible'); startPlayback(2,blobURLs[2],xlElapsed);}else{mm.textContent=cd;setRing(rf,cd/3);} },1000);
+    };
+    await acquireWakeLock(); xlMR.start(1000);
+    const rf=document.getElementById('panel-2').querySelector('.ring-fill');
+    rf.classList.remove('mode-play','mode-xl'); rf.classList.add('mode-record'); setRing(rf,0);
+    document.getElementById('btn-2').style.display='none';
+    document.getElementById('stop-2').classList.add('visible');
+    document.getElementById('state-2').className='state-label recording'; document.getElementById('state-2').textContent='Recording…';
+    const mm=document.getElementById('xl-mm'); mm.style.color='var(--gold)'; mm.style.fontSize='1.8rem';
+    document.getElementById('xl-label').textContent='elapsed';
+    xlTimer=setInterval(()=>{ xlElapsed++; mm.textContent=fmtMM(xlElapsed); setRing(rf,Math.min(xlElapsed/600,1)); },1000);
+  }).catch(()=>{ document.getElementById('state-2').className='state-label'; document.getElementById('state-2').textContent='Microphone access denied'; });
+}
+
+function stopXL() {
+  if(!xlMR||xlMR.state==='inactive') return;
+  clearInterval(xlTimer);
+  document.getElementById('stop-2').classList.remove('visible');
+  document.getElementById('state-2').className='state-label'; document.getElementById('state-2').textContent='Processing…';
+  xlMR.stop();
+}
+
+/* ── HISTORY DRAWER ── */
+document.getElementById('historyBtn').style.display='flex';
+function openHistory()  { renderHistory(); document.getElementById('historyDrawer').classList.add('open'); }
+function closeHistory() { document.getElementById('historyDrawer').classList.remove('open'); }
+async function renderHistory() {
+  const recs=await getAllRecordings(), list=document.getElementById('recList'), st=document.getElementById('storageText');
+  if(!recs.length){ list.innerHTML='<p class="rec-empty">No recordings yet.</p>'; st.innerHTML='No recordings stored'; return; }
+  const tb=recs.reduce((s,r)=>s+(r.blob?.size||0),0);
+  st.innerHTML=`<span>${recs.length}</span> recording${recs.length!==1?'s':''} · <span>${fmtBytes(tb)}</span> used`;
+  list.innerHTML='';
+  recs.forEach(rec=>{
+    const url=URL.createObjectURL(rec.blob), item=document.createElement('div');
+    item.className='rec-item'; item.dataset.id=rec.id;
+    item.innerHTML=`<div class="rec-meta"><span class="rec-date">${fmtDate(rec.ts)}</span><span class="rec-dur">${fmtDuration(rec.duration)}</span></div><div class="rec-time">${fmtTime(rec.ts)}</div><div class="rec-actions"><button class="rec-btn play" onclick="playHistoryRec(${rec.id},'${url}',${rec.duration},this)">▶ Play</button><button class="rec-btn export" onclick="exportHistoryRec('${url}',${rec.ts},'${rec.mimeType}')">↑ Export</button><button class="rec-btn del" onclick="deleteHistoryRec(${rec.id},this)">✕ Delete</button></div>`;
+    list.appendChild(item);
+  });
+}
+function playHistoryRec(id,url,dur,btn){
+  document.querySelectorAll('.rec-btn.play').forEach(b=>b.classList.remove('playing-now'));
+  btn.classList.add('playing-now'); btn.textContent='■ Stop';
+  playbackAudio.src=url; playbackAudio.play();
+  playbackAudio.onended=()=>{btn.classList.remove('playing-now');btn.textContent='▶ Play';btn.onclick=()=>playHistoryRec(id,url,dur,btn);};
+  btn.onclick=()=>{playbackAudio.pause();playbackAudio.currentTime=0;btn.classList.remove('playing-now');btn.textContent='▶ Play';btn.onclick=()=>playHistoryRec(id,url,dur,btn);};
+}
+async function exportHistoryRec(url,ts,mime){ const r=await fetch(url),b=await r.blob(); await shareOrDownload(b,fmtExportName(ts),mime); }
+async function deleteHistoryRec(id,btn){ await deleteRecording(id); const item=btn.closest('.rec-item'); item.style.opacity='0'; item.style.transition='opacity 0.3s'; setTimeout(()=>{item.remove();renderHistory();},320); }
+async function confirmClearAll(){ if(!confirm('Delete all recordings? This cannot be undone.')) return; await idbClear('recordings'); renderHistory(); }
+
+/* ── INIT ── */
+async function init() { await initDB(); initLyrics(); resetListenUI(); resetXL(); }
+init();
+</script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
 </body>
 </html>
