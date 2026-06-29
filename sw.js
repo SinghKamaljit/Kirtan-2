@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gurbani-tutor-v22';
+const CACHE_NAME = 'gurbani-tutor-v23';
 const urlsToCache = [
 './', './index.html', './manifest.json',
 './icon-192.png', './icon-512.png',
