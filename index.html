@@ -313,9 +313,9 @@ const MAX_HISTORY = 5;
 /* ── APP IDENTITY — change only manifest.json, nothing here ever needs editing ── */
 let APP_ID   = 'kirtan1';   // safe fallback
 let APP_NAME = 'Kirtan 1';
-fetch('./manifest.json').then(r=>r.json()).then(m=>{
+const appReady = fetch('./manifest.json').then(r=>r.json()).then(m=>{
   APP_NAME = m.short_name || m.name || APP_NAME;
-  APP_ID   = APP_NAME.replace(/\s+/g,'').toLowerCase(); // "Kirtan 2" → "kirtan2"
+  APP_ID   = APP_NAME.replace(/\s+/g,'').toLowerCase();
   document.querySelector('h1').textContent = APP_NAME;
 }).catch(()=>{});
 
@@ -733,7 +733,7 @@ async function deleteHistoryRec(id,btn){ await deleteRecording(id); const item=b
 async function confirmClearAll(){ if(!confirm('Delete all recordings? This cannot be undone.')) return; await idbClear('recordings'); renderHistory(); }
 
 /* ── INIT ── */
-async function init() { await initDB(); initLyrics(); resetListenUI(); resetXL(); }
+async function init() { await appReady; await initDB(); initLyrics(); resetListenUI(); resetXL(); }
 init();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
